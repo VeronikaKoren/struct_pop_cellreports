@@ -1,0 +1,237 @@
+% tests and plots difference between the regular model and the model with
+% removed information 1) across the entire population and
+% 2) within the subpopulation of neurons from the same coding pool
+% testing with the permutation test on the p-value using the balanced accuracy
+
+format long
+
+clear all
+close all
+clc
+
+permute=2;                                                                      % type of permutation:  2-permute across samples (for every feature), a.k.a. remove nosie correlations 
+savefig=1;                                                             
+
+period=2;
+alpha=0.05;                                                                     % significance level
+
+namea={'V1','V4'};
+namep={'target','test'};
+
+figname=['svm_linear_rbf_',namep{period}];
+savefile='/home/veronika/Dropbox/struct_pop/figure/svm_nonlinear/';
+
+pos_vec=[0,0,12,9];                                                            % figure size in cm [x_start, y_start, width, height]
+green=[0.2,0.7,0];
+
+lw=1.0;                                                                         % linewidth
+ms=6;                                                                           % markersize
+fs=10;                                                                          % fontsize
+lwa=1;                                                                          % linewidth for figure borders
+
+%% load results of the regular model
+
+addpath('/home/veronika/struct_pop/result/classification/svm_tartest/hdim/')
+addpath('/home/veronika/struct_pop/result/classification/svm_rbf/')
+addpath('/home/veronika/struct_pop/result/classification/svm_tartest/remove_noise/')
+
+acc=cell(2,1);                                                                  % {area} (nbses,1);
+acc_perm=cell(2,1);                                                             % {area} (nbses, nperm)
+
+acc2=cell(2,1); 
+acc2_perm=cell(2,1);
+
+acc3=cell(2,1); 
+acc3_perm=cell(2,1);
+
+for ba=1:2
+    
+    loadname=['svm_',namea{ba},namep{period},'.mat'];
+    load(loadname);
+   
+    acc{ba}=bac_all;        
+    acc_perm{ba}=bac_allp;
+    
+    clear bac_all
+    clear bac_allp
+    
+    loadname2=['svm_', namea{ba},namep{period},'_remove_noisecorr'];
+    load(loadname2);
+    
+    acc2{ba}=bac_all;      
+    acc2_perm{ba}=bac_allp;
+    
+    loadname3=['svm_rbf_', namea{ba},namep{period}];
+    load(loadname2);
+    
+    acc3{ba}=bac_all;      
+    acc3_perm{ba}=bac_allp;
+    
+    clear bac_all
+    clear bac_allp
+    
+end
+
+%% test: removing noise correlations increases classification performance
+
+d_sess2=cellfun(@(x,y) x-y, acc2,acc,'UniformOutput', false);                                                       % compute the difference bac_permuted - bac_regular 
+d2=cellfun(@mean, d_sess2);                                                                                         %  average across sessions
+d_perm2=cellfun(@(x,y) mean(x-y), acc2_perm,acc_perm,'UniformOutput',false);
+d_perm2=cell2mat(d_perm2);
+                                   
+p_val2=zeros(2,1);
+
+for ba=1:2
+    
+    x=d2(ba);
+    x0=d_perm2(ba,:);
+    
+    p_val2(ba)=sum(x<x0)/length(x0);    
+
+end
+
+hyp2=p_val2<alpha/(numel(p_val2)*2);
+display(p_val2,'p-value perm. test on the hypothesis: removing noise correlatons increases classification performance')
+
+%% test: rbf SVM performs better than linear SVM
+
+d_sess3=cellfun(@(x,y) x-y, acc3,acc,'UniformOutput', false);                                                       % compute the difference bac_permuted - bac_regular 
+d3=cellfun(@mean, d_sess3);                                                                                                        %  average across sessions
+d_perm3=cellfun(@(x,y) mean(x-y), acc3_perm,acc_perm,'UniformOutput',false);
+d_perm3=cell2mat(d_perm3);
+                   
+%  permutation test on the p-value on groups with plus and minus neurons
+
+pval3=ones(2,1);
+
+for ba=1:2
+    
+    x=d3(ba);
+    x0=d_perm3(ba,:);
+    
+    pval3(ba)=sum(x<x0)/length(x0);    
+
+end
+
+
+hyp3=pval3<alpha/(numel(pval3)*2);
+display(pval3,'p-value permutation test on the significance of the model with removed noise within coding pool')
+
+%% difference permute across all vs. permute within group
+
+d_sess=  cellfun(@(x,y) x-y, acc2_perm,acc3_perm, 'UniformOutput',false);           % difference permuted all, permuted in groups
+d=cellfun(@mean, d_sess,'UniformOutput', false);
+d_perm=cell2mat(d);
+
+pval_diff=zeros(2,1);
+
+for ba=1:2
+    
+    x=nanmean(acc2{ba}-acc3{ba});
+    x0=d_perm(ba,:);
+    
+    pval_diff(ba)=sum(x<x0)/length(x0);    
+
+end
+
+
+hyp_diff=pval_diff<alpha/(numel(pval_diff)*2);
+display(pval_diff,'p-value permutation test on remove corr vs. nonlinear')
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% plot session average and results in individual sessions
+
+ylim2=[-0.12,0.12];
+yt2=-0.1:0.1:0.1;
+xt=[7,14;4,8];
+pltidx={[1,2],[4,5]};
+col={'k',green};
+
+H=figure('name',figname,'visible','on');
+
+% plot session averages
+for ba=1:2
+    
+    y2=d_sess2{ba};
+    [~,order]=sort(y2);
+    y2=y2(flip(order));
+    
+    %y3=d_sess3{ba};
+    %y3=y3(order);
+    
+    subplot(2,3, pltidx{ba})
+    hold on
+    plot(y2,'+','color',col{1},'markersize',ms,'Linewidth',lw+1);
+    %plot(y3,'x','color',col{2},'markersize',ms,'Linewidth',lw+1);
+    plot(0:length(y2)+1,zeros(length(y2)+2,1),'--','color',[0.5,0.5,0.5,0.5],'linewidth',lw)
+    hold off
+    
+    xlim([0,length(y2)+1])
+    ylim(ylim2)
+    box off
+    
+    if ba==2
+        xlabel ('Session index','FontName','Arial','fontsize',fs);
+    end
+    
+    set(gca,'XTick',xt(ba,:))
+    set(gca,'YTick',yt2)
+    set(gca,'YTickLabel',yt2*100,'fontsize',fs)
+    grid on
+    set(gca,'LineWidth',lwa,'TickLength',[0.025 0.025]);
+     
+end
+
+
+yt=-0.02:0.02:0.02;
+ytl=yt*100; 
+pltm=0.03-0.005;
+pltidx=[3,6];
+
+% plot results in sessions
+for ba=1:2
+    
+    x=d2(ba);
+    x0=d_perm2(ba,:);
+    
+    subplot(2,3,pltidx(ba))
+    hold on
+    bs=boxplot(x0','colors',[0.5,0.5,0.5]);
+    plot(1,x(1),'+','color',col{1},'markersize',ms,'Linewidth',2);
+    %plot(2,x(2),'x','color',col{2},'markersize',ms,'Linewidth',2);
+    set(bs,{'linew'},{1})
+    plot(0:4,zeros(5,1),'--','color',[0.5,0.5,0.5,0.5],'linewidth',lw)
+    grid on
+    
+    hold off
+    
+    text(1.05,0.5,namea{ba},'units','normalized', 'FontName','Arial','fontsize',fs)
+    xlim([0.2,1.8])
+    ylim([-0.03,0.03])
+    box off
+    
+    hout=findobj(gca,'tag','Outliers');
+    delete(hout)
+    set(gca,'YTick',yt)
+    set(gca,'YTickLabel',yt*100,'fontsize',fs, 'FontName','Arial','fontsize',fs)  
+    set(gca,'XTickLabel',[])
+   
+    %set(gca,'XTickLabel',{'all','across'},'XTickLabelRotation',40)
+    
+    set(gca,'LineWidth',lwa,'TickLength',[0.025 0.025]);
+      
+end
+
+axes
+h0=text(-0.15,1.05,'B', 'units','normalized','FontName','Arial','fontsize',fs,'FontWeight','bold'); 
+h2 = ylabel ('Difference in accuracy (percent)','units','normalized','Position',[-0.1,0.5,0],'FontName','Arial','fontsize',fs);
+set(gca,'Visible','off')
+set(h2,'visible','on')
+
+set(H, 'Units','centimeters', 'Position', pos_vec) 
+set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) 
+
+if savefig==1
+    saveas(H,[savefile,figname],'pdf');
+end
+
