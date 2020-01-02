@@ -1,5 +1,5 @@
 % compute the performance of the linear SVM on sign-specific model: extract
-% the permformance of a specific group by replacing the input of the other
+% the permformance of a specific group of neurons by replacing the input of the other
 % group with activity from a randomly selected trial
 
 close all
@@ -15,7 +15,7 @@ period=2;
 
 saveres=0;                                                                      % save result?
 
-nperm=5;                                                                        % number of permutations 
+nperm=1000;                                                                        % number of permutations 
 ncv=100;                                                                         % number of cross-validations for splits into training and validation set 
 
 %%
@@ -51,7 +51,7 @@ sc_all=cellfun(@(x) squeeze(sum(x,3)) ,strain, 'UniformOutput',false);
 
 %% load weights
 
-loadname2=['svmw_',namea{ba},namep{period},'.mat'];                       % load w_svm
+loadname2=['svmw_',namea{ba},namep{period},'.mat'];                       	% load w_svm
 load(loadname2)
 
 signw=cellfun(@sign, weight_all, 'UniformOutput', false);
@@ -64,7 +64,7 @@ tic
 
 bac_sign=cell(nbses,1);
 
-for sess=1%:nbses
+oarfor sess=1:nbses
    
     sc_sess=sc_all(sess,:); % 2 conditions
     sc_one=cat(1,sc_sess{1},sc_sess{2}); % 1 condition; concatenated
@@ -103,6 +103,7 @@ toc
 %%
 bac_minus=cellfun(@(x) x(1,:)',bac_sign,'UniformOutput', false);
 bac_plus=cellfun(@(x) x(2,:)',bac_sign,'UniformOutput', false);
+
 %% save results
 
 if saveres==1

@@ -1,5 +1,5 @@
 % computes the area under the ROC curve (auc score) of single neurons 
-% uses difference of spike counts sc_test-sc_target in all 3 pairs of conditions 
+% uses spike counts in conditions correct match and non-match 
 % computes the regular auc score (1 per neuron) and the auc score  with permuted class labels (nperm auc scores for each single neuron) 
 
 close all
@@ -39,7 +39,7 @@ maxy_cell=cellfun(@(x) max(abs(x)), cat_sc, 'UniformOutput', false);
 maxi=max(cell2mat(maxy_cell));
 xvec=linspace(0,maxi,200);                                                % support for the probability distribution (used for computing the area under the ROC curve)
 
-%% compute area under the curve for difference of spike counts
+%% compute area under the curve for spike counts
 
 nbses=size(sc_all,2);
 auc=cell(nbses,1);
@@ -49,9 +49,9 @@ tic
 disp(['computing auc score in ', namea{ba},' ', namep{period}])
 
                                                                      
-parfor sess=1:nbses                                                            % across recording sessions
+parfor sess=1:nbses                                                        % across recording sessions
   
-    N=size(sc_all{1,sess},2);                                               % number of cells in a session 
+    N=size(sc_all{1,sess},2);                                              % number of cells in a session 
     
     auc_collect=zeros(N,1);
     a_perm=zeros(N,nperm);

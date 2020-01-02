@@ -1,12 +1,12 @@
-%% spike-triggered MUA in the two conditions
-% save for each session
+%% spike-triggered population activity in the two conditions
+
 
 close all
 clear all
 clc
 format long
 
-saveres=0;  % save result?
+saveres=0;  								     % save result?
 ba=1;
 period=2;
 
@@ -20,7 +20,7 @@ L=500;
 nbit=20;
 
 iW=100;                                                                      % half width of the window
-iWindex=-iW:iW;                                                              % time window of interest for s-MU
+iWindex=-iW:iW;                                                              % time window of interest for stpa
 
 %% load data
 
@@ -93,7 +93,7 @@ for sess = 1:nbses                                                              
                     xp(n,:)=[];                                        % remove the neuron n
                     muap=mean(xp);
                     
-                    for t=iW+1:(L-1)-iW                   %at least t=101
+                    for t=iW+1:(L-1)-iW                   			%at least t=101
                         
                         if o(t-1)==1
                             smua_p(j,:,n)=smua_p(j,:,n)+muap(1,t-iW:t+iW);

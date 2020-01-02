@@ -15,8 +15,8 @@ period=2;
 ba=1;
 window=3;
 
-nbit=5;
-nperm=3;
+nbit=20;
+nperm=1000;
 
 %% window
 start_vec=[500,500,750] - 300*(period==1);                                    % beginning of the time window 

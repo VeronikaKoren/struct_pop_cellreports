@@ -1,6 +1,6 @@
 
 % compute ccg noise
-% within group (within plus and within minus neurons) and across groups of plus and minus
+% within group (within informative and within less informative neurons)-compare the two groups
 % cross-correlation function (ccg_raw - ccg_trial_invariant)
 % 1 condition (concatenated trials from match and non-match)
 

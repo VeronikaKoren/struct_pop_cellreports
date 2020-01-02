@@ -1,4 +1,4 @@
-%% spike-triggered population activty within the group of informative and uninformative neurons
+%% spike-triggered population activty within the group of informative and less informative neurons
 
 close all
 clear all
@@ -11,10 +11,10 @@ place=1;
 
 ba=2;
 period=2;
-window=3;                                   
+window=1;                                   
 
-nbit=10;                                                                    % number of iteration for trial invariant smua
-nperm=2;
+nbit=20;                                                                    % number of iteration for trial invariant smua
+nperm=1000;
                                                                                           
 start_vec=[500,500,750] - 300*(period==1);                                    % beginning of the time window 
 start=start_vec(window);

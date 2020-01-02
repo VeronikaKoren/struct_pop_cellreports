@@ -22,9 +22,9 @@ if type==2
     nperm=1000;
 end
 
-%start_vec=[500,500,750] - 300*(period==1);                                    % beginning of the time window 
-%start=start_vec(window);
-start=1;
+start_vec=[500,500,750] - 300*(period==1);                                    % beginning of the time window 
+start=start_vec(window);
+
 Kvec=[500,250,250];
 K=Kvec(window);
 display([start,start+K],'window')
@@ -98,8 +98,8 @@ if saveres==1
     
     if type==1
         address='/home/veronika/synced/struct_result/weights/weights_regular/';
-        %filename=['svmw_', namew{window},namea{ba},namep{period}];
-        filename=['svmw_', namew{window},namea{ba},'delay'];
+        filename=['svmw_', namew{window},namea{ba},namep{period}];
+        
         save([address, filename],'weight_all')
         
     else

@@ -1,5 +1,5 @@
-% 
 
+%%
 close all
 clear all
 clc 
@@ -10,16 +10,16 @@ showfig=1;
 
 ba=1;
 period=2;
-chosen_bin=2;                                                                   % [20,50];
+chosen_bin=2;                                                                   % choose 1-4;
 
 start_vec=[200,500];                                                             % beginning of the time window for the target (200) and the test stimulus (500) 
 start=start_vec(period);
 K=500;
 
-blv=[20,50];
+blv=[20,50, 75,100];
 bin_length=blv(chosen_bin);
     
-display(['noise correlation of binned spike count with bin length ', sprintf('%1.0i',bin_length)])
+display(['noise correlation of binned spike trains with bin length ', sprintf('%1.0i',bin_length)])
 
 %% load spike counts
 

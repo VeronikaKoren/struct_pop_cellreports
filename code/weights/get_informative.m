@@ -1,3 +1,4 @@
+% distinguish informative and less informative neurons
 
 clear all 
 close all
@@ -15,7 +16,7 @@ namea={'V1','V4'};
 namep={'target','test'};
 namew={'','first_half_','second_half_'};
 
-task=['determine informative and uninformative neurons in ', namea{ba},namep{period}];
+task=['determine informative and less informative neurons in ', namea{ba},namep{period}];
 disp(task)
 %%
 

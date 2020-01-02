@@ -16,8 +16,8 @@ period=2;
 ba=2;                                                                         % brain area: 1 for V1, 2 for V4                                                                     % type of model: 1~ regular model, 2-permute sc across features (for every sample), % 3-permute across samples (for every feature); for more details, look inside the function svm_mc_fun
 window=1;
 
-nperm=2;                                                                     % number of permutations of class labels
-ncv=20;                                                                      % number of cross-validations for splits into training and validation set 
+nperm=1000;                                                                     % number of permutations of class labels
+ncv=100;                                                                      % number of cross-validations for splits into training and validation set 
 
 %%
 
@@ -45,7 +45,7 @@ else
     addpath('/home/veronika/struct_pop/function/')
 end
 
-loadname=['spike_train_choice_',namea{ba},'_',namep{period},'.mat'];                  % load spike trains
+loadname=['spike_train_',namea{ba},'_',namep{period},'.mat'];                  % load spike trains
 load(loadname);
 nbses=size(spiketrain,1);
 
@@ -98,8 +98,8 @@ display(mean(bac_all),'mean BAC')
 %% save results
 
 if saveres==1
-    %address=['/home/veronika/synced/struct_result/classification/svm_',nameperm{type},'/'];
-    address='/home/veronika/synced/struct_result/classification/svm_stim/';
+    address=['/home/veronika/synced/struct_result/classification/svm_',nameperm{type},'/'];
+    %address='/home/veronika/synced/struct_result/classification/svm_stim/';
     filename=['svm_',nameperm{type},'_',namea{ba},namep{period},namew{window}];
     save([address, filename],'bac_all','bac_allp','start','K')
 end

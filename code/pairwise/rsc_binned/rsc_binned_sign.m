@@ -28,7 +28,7 @@ bin_length=blv(1);
 namea={'V1','V4'};
 namep={'target', 'test'};
 
-addpath('/home/veronika/Dropbox/struct_pop/code/function/')                                         % load spike counts
+addpath('/home/veronika/Dropbox/struct_pop/code/function/')                                         
 addpath('/home/veronika/synced/struct_result/input/')
 addpath('/home/veronika/synced/struct_result/weights/weights_regular/')
 

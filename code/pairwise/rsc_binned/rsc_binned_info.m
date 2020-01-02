@@ -1,4 +1,4 @@
-% correlations of binned spike trains for informative and uninformative
+% correlations of binned spike trains for informative and less informative
 % neurons
 
 close all

@@ -1,6 +1,7 @@
 % compute noise correlation of spike counts for pairs of neurons in
 % the column for each condition
 % concatenate results across sessions
+% compare across conditions
 
 
 close all
@@ -13,7 +14,6 @@ saveres=0;
 ba=1;
 period=2;
 
-nperm=1;
 K=500;                                                                          % number of time steps
 start_vec=[200,500];                                                             % beginning of the time window for the target (200) and the test stimulus (500) 
 start=start_vec(period);

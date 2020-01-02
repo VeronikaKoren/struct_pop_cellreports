@@ -2,8 +2,7 @@
 % the session
 % concatenate results across sessions
 % rsc is computed from a vector of z-scored spike counts 
-% rsc_perm is computed with one of the two vectors is permuted across trials
-% rsc_noise=rsc_raw - rsc_perm
+
 
 close all
 clear all
@@ -68,5 +67,5 @@ end
 if saveres==1
     address='/home/veronika/synced/struct_result/pairwise/rsc/rsc_1c/';
     filename=['rsc_1c_',namea{ba},'_',namep{period}];
-    save([address,filename],'rsc', 'rsc_perm')
+    save([address,filename],'rsc')
 end

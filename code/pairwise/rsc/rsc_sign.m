@@ -17,9 +17,8 @@ period=2;
 nperm=1000;
 K=500;                                                                          % number of time steps
 
-%start_vec=[200,500];                                                             % beginning of the time window for the target (200) and the test stimulus (500) 
-%start=start_vec(period);
-start=1;
+start_vec=[200,500];                                                             % beginning of the time window for the target (200) and the test stimulus (500) 
+start=start_vec(period);
 display([start,start+K],'window')
 %% load spike counts
 
@@ -42,8 +41,7 @@ nbses=size(sc_all,1);
 
 addpath('/home/veronika/synced/struct_result/weights/weights_regular/')
 
-%loadname2=['svmw_',namea{ba},namep{period},'.mat'];                   
-loadname2=['svmw_',namea{ba},'delay','.mat'];  
+loadname2=['svmw_',namea{ba},namep{period},'.mat'];                    
 load(loadname2)
 
 w_vec=cell2mat(cellfun(@(x) double(permute(x,[2,1])),weight_all,'UniformOutput', false));
@@ -149,8 +147,7 @@ display(pval)
 
 if saveres==1
     address='/home/veronika/synced/struct_result/pairwise/rsc/sign/';
-    %filename=['rsc_sign_',namea{ba}, '_',namep{period}];
-    filename=['rsc_sign_',namea{ba}, '_delay'];
+    filename=['rsc_sign_',namea{ba}, '_',namep{period}];
     save([address,filename],'within','across','pwp','pap','pval')
 end
 

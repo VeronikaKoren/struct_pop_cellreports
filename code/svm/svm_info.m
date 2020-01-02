@@ -1,5 +1,6 @@
 % compute the performance of the linear SVM on spike counts
 % in one time window (target or test) and in one brain area (V1 or V4)
+% 
 
 close all
 clear all

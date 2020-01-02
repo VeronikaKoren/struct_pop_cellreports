@@ -17,8 +17,8 @@ period=2;
 ba=1; 
 window=2;
 
-nperm=2;                                                                   % number of permutations of class labels
-ncv=10;                                                                    % number of cross-validations for splits into training and validation set 
+nperm=1000;                                                                   % number of permutations of class labels
+ncv=100;                                                                    % number of cross-validations for splits into training and validation set 
 
 start_vec=[500,500,750] - 300*(period==1);                                 % beginning of the time window 
 start=start_vec(window);
@@ -108,6 +108,7 @@ parfor sess=1:nbses
     
 end
 toc
+
 %%
 display(mean(bac_all),'average balanced accuracy');
 %% save results

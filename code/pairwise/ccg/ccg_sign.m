@@ -56,7 +56,7 @@ pw=cell(nbses,nperm);
 pa=cell(nbses,nperm);
 
 tic
-for sess = 1%:nbses
+parfor sess = 1:nbses
     
     st=double(strain{sess});
     w=weight_all{sess};
@@ -91,7 +91,7 @@ for sess = 1%:nbses
     
     for perm=1:nperm
         wrs=sign(- w_abs + (w_abs + w_abs).*rand(N,1)');                    % random sign
-        w_perm=w_nosign.*wrs;                                                      % apply random sign
+        w_perm=w_nosign.*wrs;                                               % apply random sign
         
         % p1
         neg=find(w_perm<0);
@@ -113,7 +113,7 @@ for sess = 1%:nbses
         pw{sess,perm}=cat(2,peak1,peak2)';
         
         % p12
-        if min([length(pos),length(neg)])>1                                         % at least two neurons in each group
+        if min([length(pos),length(neg)])>1                                    % at least two neurons in each group
             spike_train=st;
             [ccg]=ccg_pm_fun(spike_train,wrs, nshuffle);
             

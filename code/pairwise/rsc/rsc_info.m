@@ -1,5 +1,5 @@
-% noise correlations between informative and uninformative neurons,
-% condition-specific
+% noise correlations between informative and uninformative neurons
+% permutation test with random neural index
 
 close all
 clear all

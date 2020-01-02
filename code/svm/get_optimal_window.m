@@ -1,4 +1,4 @@
-% compute performance of a linear SVM as a function of the starting point
+% compute performance of a linear SVM as a function of the starting time
 % and the length of the time window
 
 close all

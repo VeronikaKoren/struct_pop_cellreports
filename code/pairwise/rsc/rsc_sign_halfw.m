@@ -2,6 +2,7 @@
 % compared to neurons with opposite selectivity?
 % compute noise correlation between (+/+), (-/-) and (+/-) 
 % use both conditions
+% half window (first or second half of the whole window)
 
 close all
 clear all
@@ -18,17 +19,18 @@ window=2;
 nperm=1000;
 
 K=250;
-start_vec=[500,750]-300;                                                             % beginning of the time window for the target (200) and the test stimulus (500) 
+start_vec=[500,750]-300;                                                             % beginning of the time window 
 start=start_vec(window);
 
 display([start,start+K],'window')
+
 %% load spike counts
 
 namea={'V1','V4'};
 namep={'target', 'test'};
 namew={'first_half','second_half'};
 
-addpath('/home/veronika/Dropbox/struct_pop/code/function/')                    % load spike counts
+addpath('/home/veronika/Dropbox/struct_pop/code/function/')                    
 addpath('/home/veronika/synced/struct_result/input/')
 
 
@@ -117,6 +119,7 @@ parfor ss=1:nbses                                                               
 end
 
 toc
+
 %%
 within=cell2mat(rsc_within);
 across=cell2mat(rsc_across);
