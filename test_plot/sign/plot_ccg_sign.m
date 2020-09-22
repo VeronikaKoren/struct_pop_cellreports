@@ -4,12 +4,11 @@ clc
 
 savefig=0;
 period=2;
-window=3;
+window=1;
 
 namea={'V1','V4'};
 namep={'target','test'};
 namew={'','first_half_','second_half_'};
-
 
 if window==1
     figname=['ccg_sign_',namep{period},namew{window}];
@@ -17,13 +16,13 @@ else
     figname=['ccg_sign_',namep{period},'_',namew{window}(1:end-1)];
 end
 
-savefile='/home/veronika/Dropbox/struct_pop/figure/sign/ccg/';
+savefile='/home/veronika/Dropbox/struct_pop/figure/final/';
 
 green=[0.2,0.7,0];
 gray=[0.2,0.2,0.2];
 col={green,gray};
 
-pos_vec=[0 0 14 9];
+pos_vec=[0 0 11.4 8];
 
 fs=10;
 ms=5;
@@ -41,7 +40,7 @@ pval_all=zeros(2,1);
 for ba=1:2
     
     
-    loadname=['ccg_sign_',namew{window},namea{ba},'_',namep{period},'.mat'];                   % load w_svm
+    loadname=['ccg_sign_',namew{window},namea{ba},namep{period},'.mat'];                   % load w_svm
     load(loadname)
     variable{ba,1}=ccg_within;
     variable{ba,2}=ccg_across;
@@ -95,7 +94,7 @@ for ba=1:2
     
     set(gca,'YTick',yt)
     set(gca,'YTickLabel',yt, 'FontName','Arial','Fontsize',fs)
-    set(gca,'XTick',[-iW,0,iW])
+    set(gca,'XTick',[-50,0,50])
     if ba==1
         title(titles{1}, 'FontName','Arial','Fontsize',fs,'Fontweight','normal')
         set(gca,'XTickLabel',[])
@@ -171,12 +170,17 @@ for ba=1:2
     set(gca,'LineWidth',lwa,'TickLength',[0.025 0.025]);
     
 end
+axes;
+  
+h2 = ylabel ('Probability of coincident spiking','units','normalized','Position',[-0.1,0.5,0],'FontName','Arial','fontsize',fs);
+set(gca,'Visible','off')
+set(h2,'visible','on')
 
 set(H, 'Units','centimeters', 'Position', pos_vec)
 set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) % for saving in the right size
 
 if savefig==1
-    saveas(H,[savefile,figname],'pdf');
+    print(H,[savefile,figname],'-dtiff','-r300');
 end
 
 %%

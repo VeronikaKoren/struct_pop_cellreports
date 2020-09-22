@@ -6,15 +6,20 @@ close all
 clc
 format long
 
-savefig=1;
 
+savefig=0;
 alpha=0.05; % significance level
 
-namea={'V1','V4'};
-figname='bac_half_window';
-savefile='/home/veronika/Dropbox/struct_pop/figure/classification/';
+%%
 
-pos_vec=[0,0,12,9]; % size of the figure in cm
+period=2;
+namea={'V1','V4'};
+namep={'target','test'};
+figname='bac_half_window';
+savefile='/home/veronika/Dropbox/struct_pop/figure/final/';
+
+pos_vec=[0,0,11.4,8.5]; 
+
 lw=1.0;
 ms=6;
 fs=10;
@@ -29,17 +34,21 @@ acc=cell(2,1);
 accp=cell(2,1);
 for ba=1:2
     
-    loadname=['svm_window_regular',namea{ba},'.mat'];
+    loadname=['svm_window_regular',namea{ba},namep{period},'.mat'];
     load(loadname);
   
     acc{ba}=bac_halfw;        % balanced accuracy
     
-    loadname2=['svm_window_permuted',namea{ba},'.mat'];
+    loadname2=['svm_window_permuted',namea{ba},namep{period},'.mat'];
     load(loadname2);
     
     accp{ba}=bac_halfwp;
     
 end
+
+addpath '/home/veronika/synced/struct_result/classification/svm_regular/'
+loadname2='svm_session_order_test';
+load(loadname2);
 
 %% permutation test on the p-value, test difference of BAC
 
@@ -49,7 +58,7 @@ mean_diffp=cellfun(@(x) squeeze(mean(x(2,:,:)-x(1,:,:))), accp,'UniformOutput', 
 mean_bac=cellfun(@(x) mean(x,2), acc,'UniformOutput',false); % mean across sessions
 mean_accp=cellfun(@(x) squeeze(mean(x,2)),accp, 'UniformOutput', false);
 
-%% permutation test difference in bac between first and second half
+%
 
 p_val=ones(2,1);
 for ba=1:2
@@ -80,17 +89,15 @@ for ba=1:2
     subplot(2,3,idxp(ba,:))
     x1=acc{ba}(1,:);
     x2=acc{ba}(2,:);
-    
-    
-    [val,order]=sort(x2);
-    new_order=flip(order);
+  
+    order=sess_order{ba};
     
     subplot(2,3,idxp(ba,:))
-    hold on
-    plot(x1(new_order),'+','color',col{1},'markersize',ms,'Linewidth',lw+1);
-    plot(x2(new_order),'x','color',col{2},'markersize',ms,'Linewidth',lw+1);
     
+    hold on
     plot(0:length(x1)+1,ones(length(x1)+2,1).*0.5,'--','color',[0.2,0.2,0.2,0.5],'linewidth',lw-0.5)
+    plot(x1(order),'+','color',col{1},'markersize',ms,'Linewidth',lw+1);
+    plot(x2(order),'x','color',col{2},'markersize',ms,'Linewidth',lw+1);
     
     hold off
     ax=[0,length(x1)+1,ymin,ymax];
@@ -118,7 +125,7 @@ end
 
 ylimit=[0.47,0.62];
 dx=0.008;
-yt2=0.5:0.05:0.55
+yt2=0.5:0.05:0.55;
 
 for ba=1:2
     
@@ -169,8 +176,7 @@ end
 
 axes
 
-%h0=text(-0.15,1.05,letter, 'units','normalized','FontName','Arial','fontsize',fs,'FontWeight','bold'); 
-h1=xlabel ('Session index (sorted w.r.t. second half)','Position',[0.3,-0.08],'FontName','Arial','fontsize',fs);
+h1=xlabel ('Session index (sorted w.r.t. regular)','Position',[0.3,-0.08],'FontName','Arial','fontsize',fs);
 h2 = ylabel ('Balanced accuracy','units','normalized','Position',[-0.1,0.5,0],'FontName','Arial','fontsize',fs); 
 set(gca,'Visible','off')
 set(h2,'visible','on')
@@ -180,6 +186,6 @@ set(H, 'Units','centimeters', 'Position', pos_vec)
 set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) 
 
 if savefig==1
-    saveas(H,[savefile,figname],'pdf');
+    print(H,[savefile,figname],'-dtiff','-r300');
 end
 

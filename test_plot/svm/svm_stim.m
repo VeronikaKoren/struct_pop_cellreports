@@ -6,16 +6,18 @@ clear all
 close all
 clc
 
-savefig=0;
+savefig=1;
 period=2;
 
+%%
 namep={'target','test'};
 namea={'V1','V4'};
 
-savefile='/home/veronika/Dropbox/struct_pop/figure/classification/';
+savefile='/home/veronika/Dropbox/struct_pop/figure/final/';
 
-figname=['svm_stim_',namep{period}];
-pos_vec=[0,0,12,9]; 
+%figname=['svm_stim_',namep{period}];
+figname='fig1g'
+pos_vec=[0,0,11.4,8.5]; 
 
 lw=1.0;     % linewidth
 ms=6;       % markersize
@@ -42,6 +44,11 @@ for ba=1:2
     accp{ba}= bac_allp;
  
 end
+
+addpath '/home/veronika/synced/struct_result/classification/svm_regular/'
+loadname2='svm_session_order_test';
+load(loadname2);
+
 
 %% average across sessions
 
@@ -75,16 +82,15 @@ for ba=1:2
     
     y=squeeze(acc{ba});         % regular
     
-    [~,order]=sort(y);          % sort test results
-    order=flip(order);
-    y=y(order);
-    y0=accp{ba};
+    
+    order=sess_order{ba};
+    y0=accp{ba}(order,:);
     
     subplot(2,3,pltidx{ba})
     hold on
-    plot(1:length(y),y,'x','color',col{2},'markersize',ms,'Linewidth',lw+1);
     bs=boxplot(y0','colors',[0.5,0.5,0.5]);
     plot(0:length(x)+1,ones(length(x)+2,1).*0.5,'--','color',[0.5,0.5,0.5,0.5],'linewidth',lw)
+    plot(1:length(y),y(order),'x','color',col{2},'markersize',ms,'Linewidth',lw+1);
     hold off
     
     axis([0,length(y)+1,0.37,0.8])
@@ -101,8 +107,8 @@ for ba=1:2
     set(gca,'YTickLabel',yt,'fontsize',fs,'FontName','Arial')
     
     if ba==1
-        text(0.5,0.82,'regular on stimulus','units','normalized','color',col{2},'fontsize',fs,'FontName','Arial')
-        text(0.5,0.69,'permuted label','units','normalized','color',[0.5,0.5,0.5,0.5],'fontsize',fs,'FontName','Arial')
+        text(0.4,0.82,'regular on stimulus','units','normalized','color',col{2},'fontsize',fs,'FontName','Arial')
+        text(0.4,0.65,'permuted label','units','normalized','color',[0.5,0.5,0.5,0.5],'fontsize',fs,'FontName','Arial')
     end
     
     set(gca,'LineWidth',1.0,'TickLength',[0.025 0.025]);
@@ -154,7 +160,7 @@ end
 
 axes
 
-h1 = xlabel ('Session index (sorted)','Position',[0.3,-0.07],'FontName','Arial','fontsize',fs);
+h1 = xlabel ('Session index (sorted w.r.t. regular S+C)','Position',[0.3,-0.07],'FontName','Arial','fontsize',fs);
 h2 = ylabel ('Balanced accuracy','units','normalized','Position',[-0.1,0.5,0],'FontName','Arial','fontsize',fs);
 set(gca,'Visible','off')
 set(h2,'visible','on')
@@ -164,7 +170,7 @@ set(H, 'Units','centimeters', 'Position', pos_vec)
 set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) 
 
 if savefig==1
-    saveas(H,[savefile,figname],'pdf');
+    print(H,[savefile,figname],'-dtiff','-r300');
 end
 
 

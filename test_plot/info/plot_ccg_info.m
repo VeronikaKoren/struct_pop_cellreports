@@ -4,22 +4,22 @@ clear all
 close all
 clc
 
-savefig=1;
+savefig=0;
 period=2;
-window=3;
+window=1;
 
 namea={'V1','V4'};
 namep={'target','test'};
 namew={'','_first_half','_second_half'};
 
 figname=['ccg_info_',namep{period},namew{window}];
-savefile='/home/veronika/Dropbox/struct_pop/figure/info/';
+savefile='/home/veronika/Dropbox/struct_pop/figure/final/';
 
 gray=[0.2,0.2,0.2];
 orange=[1,0.3,0.05];
 col={orange,gray};
 
-pos_vec=[0 0 14 9];
+pos_vec=[0,0,11.4,8];
 
 fs=10;
 ms=5;
@@ -105,7 +105,7 @@ for ba=1:2
     end
     
     if ba==1
-        text(0.1,0.7,'not info','units','normalized','FontName','Arial','fontsize',fs,'color',gray)
+        text(0.1,0.7,'less info','units','normalized','FontName','Arial','fontsize',fs,'color',gray)
         text(0.1,0.85,'info','units','normalized','FontName','Arial','fontsize',fs,'color',orange)
     end
     set(gca,'LineWidth',lwa,'TickLength',[0.025 0.025]);
@@ -178,7 +178,7 @@ end
 
 axes;
   
-h2 = ylabel ('Probabiity of coincident spiking','units','normalized','Position',[-0.1,0.5,0],'FontName','Arial','fontsize',fs);
+h2 = ylabel ('Probability of coincident spiking','units','normalized','Position',[-0.1,0.5,0],'FontName','Arial','fontsize',fs);
 set(gca,'Visible','off')
 set(h2,'visible','on')
 
@@ -186,6 +186,6 @@ set(H, 'Units','centimeters', 'Position', pos_vec)
 set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) % for saving in the right size
 
 if savefig==1
-    saveas(H,[savefile,figname],'pdf');
+    print(H,[savefile,figname],'-dtiff','-r300');
 end
 

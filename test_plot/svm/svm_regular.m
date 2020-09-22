@@ -8,17 +8,18 @@ clc
 
 type=1;
 
-savefig=0;
-period=1;
+savefig=1;
+period=2;
 
 namep={'target','test'};
 namea={'V1','V4'};
 namet={'regular','homogeneous'};
 
-savefile='/home/veronika/Dropbox/struct_pop/figure/classification/';
+savefile='/home/veronika/Dropbox/struct_pop/figure/final/';
 
-figname=[namet{type},'_',namep{period}];
-pos_vec=[0,0,12,9]; 
+%figname=[namet{type},'_',namep{period}];
+figname='fig1e';
+pos_vec=[0,0,11.4,8.5]; 
 
 lw=1.0;     % linewidth
 ms=6;       % markersize
@@ -32,8 +33,9 @@ col={'k',blue};
 %% load the results of the linear SVM
 
 addpath(['/home/veronika/synced/struct_result/classification/svm_',namet{type},'/'])
+addpath '/home/veronika/synced/struct_result/classification/svm_regular/'
 
-acc=cell(2,1); % {area} (nbses,1);
+acc=cell(2,1);  % {area} (nbses,1);
 accp=cell(2,1); % {area} (nbses, nperm)
 
 for ba=1:2
@@ -46,11 +48,14 @@ for ba=1:2
  
 end
 
+loadname2='svm_session_order_test';
+load(loadname2);
+
 %% average across sessions
 
 sm=cellfun(@(x) nanmean(x),acc);                
 smp=cellfun(@(x) squeeze(nanmean(x)),accp,'UniformOutput',false);
-display(sm)
+display(sm,'mean across sessions')
 
 %% test with permutation test: BAC is significantly bigger than chance
 
@@ -67,8 +72,7 @@ display(pval,'p-value linear SVM')
 
 %% plot sessions and average
 
-
-yt=0.5:0.1:0.7; % y tick
+yt=0.5:0.1:0.7; 
 xt=[1,7,14;1,4,8];
 
 pltidx={[1,2],[4,5]};
@@ -76,18 +80,17 @@ pltidx={[1,2],[4,5]};
 H=figure('name',figname,'visible','on');
 for ba=1:2
     
-    y=squeeze(acc{ba});         % regular
+    y=squeeze(acc{ba});        
+    order=sess_order{ba};
     
-    [~,order]=sort(y);          % sort test results
-    order=flip(order);
-    y=y(order);
-    y0=accp{ba};
+    y0=accp{ba}(order,:);
     
     subplot(2,3,pltidx{ba})
     hold on
-    plot(1:length(y),y,'x','color',col{type},'markersize',ms,'Linewidth',lw+1);
+    
     bs=boxplot(y0','colors',[0.5,0.5,0.5]);
     plot(0:length(x)+1,ones(length(x)+2,1).*0.5,'--','color',[0.5,0.5,0.5,0.5],'linewidth',lw)
+    plot(1:length(y),y(order),'x','color',col{type},'markersize',ms,'Linewidth',lw+1);
     hold off
     
     axis([0,length(y)+1,0.4,0.8])
@@ -104,8 +107,8 @@ for ba=1:2
     set(gca,'YTickLabel',yt,'fontsize',fs,'FontName','Arial')
     
     if ba==1
-        text(0.5,0.82,namet{type},'units','normalized','color',col{type},'fontsize',fs,'FontName','Arial')
-        text(0.5,0.69,'permuted label','units','normalized','color',[0.5,0.5,0.5,0.5],'fontsize',fs,'FontName','Arial')
+        text(0.4,0.82,namet{type},'units','normalized','color',col{type},'fontsize',fs,'FontName','Arial')
+        text(0.4,0.65,'permuted label','units','normalized','color',[0.5,0.5,0.5,0.5],'fontsize',fs,'FontName','Arial')
     end
     
     set(gca,'LineWidth',1.0,'TickLength',[0.025 0.025]);
@@ -163,8 +166,8 @@ set(H, 'Units','centimeters', 'Position', pos_vec)
 set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) 
 
 if savefig==1
-    saveas(H,[savefile,figname],'pdf');
+    print(H,[savefile,figname],'-dtiff','-r300');
 end
 
 
-%%
+

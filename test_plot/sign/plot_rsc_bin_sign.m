@@ -4,29 +4,22 @@ clear all
 close all
 clc
 
+savefig=0;
 period=2;
 
 namea={'V1','V4'};
 namep={'target','test'};
 
 figname=['rb_sign_',namep{period}];
-figname2=['rb_sign_averages_',namep{period}];
-
-savefig=0;
-savefig2=0;
-
-savefile='/home/veronika/Dropbox/struct_pop/figure/final/';
-
-%%
+savefile='/home/veronika/Dropbox/struct_pop/figure/sign/corr/';
 
 green=[0.2,0.7,0];
 gray=[0.2,0.2,0.2];
 col={green,gray};
 
-pos_vec=[0 0 17.4 11];
-pos_vec2=[0,0,8.5,10.5];
+pos_vec=[0 0 16 9];
 
-fs=11;
+fs=10;
 ms=5;
 lw=1.2;
 lwa=1;
@@ -60,11 +53,11 @@ end
 display(pval_all,'p-values V1/V4 permutation test');
 
 %% plot
-%{
+
+
 xt=0:0.15:0.3;
 xlimit=[-0.05,0.3];
 dx=abs(xlimit(2)-xlimit(1))/18;
-yt=0:0.25:1;
 
 H=figure('name',figname,'visible','on');
 
@@ -86,12 +79,6 @@ for ba=1:2
         grid on
         xlim(xlimit)
         set(gca,'XTick',xt)
-        set(gca,'YTick',yt)
-        if i==1
-            set(gca,'YTickLabel',yt,'FontName','Arial','fontsize',fs)
-        else
-            set(gca,'YTickLabel',[])
-        end
         if pval_all(i,ba)<0.05
             text(0.7,0.7,'*','units','normalized','color','k','fontsize',fs+3)
         end
@@ -123,9 +110,9 @@ set(H, 'Units','centimeters', 'Position', pos_vec)
 set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) % for saving in the right size
 
 if savefig==1
-    print(H,[savefile,figname],'-dtiff','-r300');
+    saveas(H,[savefile,figname],'pdf');
 end
-%}
+
 %%
 
 mi=cellfun(@(x) nanmean(x),rbi);
@@ -133,7 +120,12 @@ mn=cellfun(@(x) nanmean(x),rbn);
 stdi=cellfun(@(x) nanstd(x)/sqrt(length(x)),rbi);
 stdn=cellfun(@(x) nanstd(x)/sqrt(length(x)),rbn);
 
-fs=13;
+savefig2=0;
+
+fs=16;
+pos_vec2=[0,0,8,10];
+figname2=['rb_sign_averages_',namep{period}];
+
 yt=[0,0.1];
 
 H2=figure('name',figname2,'visible','on');
@@ -178,7 +170,7 @@ end
 
 axes;
 h1 = xlabel('Bin length (ms)', 'units','normalized','Position',[0.5,-0.05,0],'FontName','Arial','Fontsize',fs);
-h2 = ylabel ('Noise correlation','units','normalized','Position',[-0.11,0.5,0],'FontName','Arial','fontsize',fs);
+h2 = ylabel ('Noise correlation of binned s.t.','units','normalized','Position',[-0.11,0.5,0],'FontName','Arial','fontsize',fs);
 
 set(gca,'Visible','off')
 set(h2,'visible','on')
@@ -188,6 +180,5 @@ set(H2, 'Units','centimeters', 'Position', pos_vec)
 set(H2,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) % for saving in the right size
 
 if savefig2==1
-    print(H2,[savefile,figname2],'-dtiff','-r300');
+    saveas(H2,[savefile,figname2],'pdf');
 end
-%}

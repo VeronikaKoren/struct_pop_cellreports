@@ -11,7 +11,7 @@ namep={'target','delay','test'};
 namea={'V1','V4'};
 
 figname='pop_psth';
-savefile='/home/veronika/Dropbox/struct_pop/figure/task/';
+savefile='/home/veronika/Dropbox/struct_pop/figure/final/';
 pos_vec=[0,0,8.5,8];
 
 fs=10;
@@ -137,7 +137,7 @@ set(H, 'Units','centimeters', 'Position', pos_vec)
 set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) 
 
 if savefig==1
-    saveas(H,[savefile,figname],'pdf');
+    print(H,[savefile,figname],'-dtiff','-r300');
 end
 
 

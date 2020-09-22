@@ -6,20 +6,23 @@ close all
 format long
 
 savefig=1;
-period=1;
-type=2;                                                             % 1 for AUC, 2 for SVM
 
+period=2;
+type=1;                                                             % 1 for AUC, 2 for SVM
+
+
+%%
 namea={'V1','V4'};
 namep={'target','test'};
 namet={'AUC','SVM'};
 longname={'AUROC','Weight linear SVM'};
 
 % figure settings
-savefile='/home/veronika/Dropbox/struct_pop/figure/weights/';
+savefile='/home/veronika/Dropbox/struct_pop/figure/final/';
 figname=['weights_',namet{type},'_',namep{period}];
 
-pos_vec=[0,0,14,9];
-fs=11;
+pos_vec=[0,0,11.4,8.6];
+fs=11.5;
 ms=5;
 lw=1.2;
 lwa=1;
@@ -33,7 +36,7 @@ bv=[0.5,0]; % baseline
 
 %% load results
 
-addpath('/home/veronika/synced/struct_result/input/')
+%addpath('/home/veronika/synced/struct_result/input/')
 
 if type==1
     addpath('/home/veronika/synced/struct_result/classification/auc_regular/')
@@ -42,17 +45,29 @@ else
     addpath('/home/veronika/synced/struct_result/weights/weights_permuted/')
 end
 
+addpath '/home/veronika/synced/struct_result/classification/svm_regular/'
+loadname3='svm_session_order_test';
+load(loadname3);
+%%
+
 w=cell(2,1);        % {area} (Ntot);
 wp=cell(2,1);       % {area} (Ntot,nperm);
+ncell_sess=cell(2,1);
 
 for ba=1:2
     if type==1
+        
         loadname=['auc_',namea{ba},namep{period},'.mat'];
         load(loadname);
+        auc=auc(sess_order{ba});
+        auc_perm=auc_perm(sess_order{ba});
         
         w{ba}=cell2mat(auc);
         wp{ba}=cell2mat(auc_perm);
+        ncell=cellfun(@(x) size(x,1), auc);
+        
     else
+        
         loadname=['svmw_',namea{ba},namep{period},'.mat'];
         load(loadname);
         w{ba}=cell2mat(cellfun(@(x) single(permute(x,[2,1])),weight_all,'UniformOutput',false));
@@ -61,20 +76,15 @@ for ba=1:2
         load(loadname2)
         wp{ba}=cell2mat(weight_perm_all);
         
+        ncell=cellfun(@(x) size(x,2), weight_all);
+        
     end
+    
+    ncell_sess{ba}=ncell(sess_order{ba});
     
 end
 
 nperm=size(wp{1,1},2);
-
-%% get nb of neurons in sessions
-
-ncell_sess=cell(2,1);
-for ba=1:2
-    loadname3=['spike_train_',namea{ba},'_',namep{period},'.mat'];
-    load(loadname3)
-    ncell_sess{ba}=cellfun(@(x) size(x,2),spiketrain(:,2));
-end
 
 %% 95 percent of permuted statistics 
 
@@ -92,11 +102,8 @@ for ba=1:2
     xp=wp{ba};
     
     nc=length(x);
-    if type==1
-        alpha=0.05./nc;
-    else
-        alpha=0.05/nc;
-    end
+    alpha=0.05./nc;
+    
     idx=round(alpha*nperm)+1;
     
     lower_bound=zeros(nc,1);
@@ -232,12 +239,7 @@ for ba=1:2
         set(gca,'XTickLabel',30:30:nc,'FontName','Arial','fontsize',fs)
     end
    
-    
     set(gca,'YTickLabel',yt,'FontName','Arial','fontsize',fs)
-    if ba==2
-        xlabel ('Neuron index','FontName','Arial','fontsize',fs);
-    end
-    
     set(gca,'LineWidth',lwa,'TickLength',[0.025 0.025]);
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -258,16 +260,12 @@ for ba=1:2
     ylim([0,max(ydist)*1.5])
     
     set(gca,'YTick',round((max(ydist)*1.5)/2*100)/100)
-    set(gca,'YTickLabel',round((max(ydist)*1.5)/2*100)/100)
+    set(gca,'YTickLabel',round((max(ydist)*1.5)/2*100)/100,'FontName','Arial','fontsize',fs)
     if ba==1
         set(gca,'YTickLabel',[])
     end
     set(gca,'XTick',yt)
     set(gca,'XTickLabel',[])
-    
-    if ba==2
-        ylabel('Prob. distribution','FontName','Arial','fontsize',fs)
-    end
     
     view([90 -90])
     text(1.05,0.5,namea{ba},'units','normalized','FontWeight','normal','FontName','Arial','fontsize',fs)
@@ -277,15 +275,20 @@ for ba=1:2
 end
 
 axes
-%text(-0.08,1.05,letter{type}, 'units','normalized', 'FontName','Arial','fontsize',fs,'FontWeight','Bold')
+
 h2 = ylabel (longname{type},'units','normalized','Position',[-0.09,0.5,0],'FontName','Arial','fontsize',fs); 
+h1 = xlabel ('Neuron index','units','normalized','Position',[0.32,-0.07,0],'FontName','Arial','fontsize',fs);
+h3 = text (0.71,-0.1,'Prob.distribution','units','normalized','FontName','Arial','fontsize',fs);
+
 set(gca,'Visible','off')
+set(h1,'visible','on')
 set(h2,'visible','on')
+set(h3,'visible','on')
 
 set(H, 'Units','centimeters', 'Position', pos_vec) 
 set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) 
 
 if savefig==1
-    saveas(H,[savefile,figname],'pdf');
+    print(H,[savefile,figname],'-dtiff','-r300');
 end
 

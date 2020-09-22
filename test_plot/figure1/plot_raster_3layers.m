@@ -12,10 +12,10 @@ condition=3; % 1 is correct non-match and 3 is correct match
 namea={'V1','V4'};
 namelay={'SG','G','IG'};
 
-savefig=0;
+savefig=1;
 
 figname='raster';
-savefile='/home/veronika/Dropbox/struct_pop/figure/task/';
+savefile='/home/veronika/Dropbox/struct_pop/figure/final/';
 pos_vec=[0,0,8.5,9];
 
 col={'m','k','b'};
@@ -151,7 +151,7 @@ set(H, 'Units','centimeters', 'Position', pos_vec)
 set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) 
 
 if savefig==1
-    saveas(H,[savefile,figname],'svg');
+    print(H,[savefile,figname],'-dtiff','-r300');
 end
 
 

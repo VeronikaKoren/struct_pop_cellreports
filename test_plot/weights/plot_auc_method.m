@@ -20,16 +20,15 @@ nperm=1000;
 task='illustrate the method of the area under the ROC curve';
 disp(task)
 
-savefile='/home/veronika/Dropbox/struct_pop/figure/weights/';
+savefile='/home/veronika/Dropbox/struct_pop/figure/final/';
 figname='auc_method';
 
 %%
-letter='B';
 namea={'V1','V4'};
 namep={'target','test'};
 
-pos_vec=[0,0,6,9.5];
-fs=10;
+pos_vec=[0,0,8.5,12];
+fs=12;
 ms=6;
 lw=1.2;
 lwa=1;
@@ -37,8 +36,8 @@ lwa=1;
 
 % take the index of the neuron with highest auc score
 
-addpath('/home/veronika/struct_pop/result/classification/auc_regular/')
-addpath('/home/veronika/struct_pop/result/input/spike_count/')
+addpath('/home/veronika/synced/struct_result/classification/auc_regular/')
+addpath('/home/veronika/synced/struct_result/input/')
 
 
 % find cell with highest auc score
@@ -50,15 +49,16 @@ load(loadname,'auc');
 
 %% load spike counts and compute roc curve and AUC for one neurons
 
-loadname=['sc_',namea{ba},'.mat'];
+loadname=['spike_train_',namea{ba},'_',namep{period},'.mat'];                  % load spike trains
 load(loadname);
 
-if period==1
-    sc_all=sc_tar;
-else
-    sc_all=sc_test;
-end
+%loadname=['sc_',namea{ba},'.mat'];
+%load(loadname);
+start_vec=[200,500];
+start=start_vec(period);                                                      % start of the time window
+L=500;
 
+sc_all=cellfun(@(x) sum(x(:,:,start:start+L-1),3),spiketrain,'UniformOutput',false)';
 
 xvec=linspace(0,100,200); % support
         
@@ -116,7 +116,6 @@ for pp=1:nperm
 end
 
 %% plot distributions, roc curves and auc score
-savefig=1;
 
 H=figure('name',figname);
 
@@ -127,16 +126,16 @@ plot(xvec, g2_perm','color',[0.5,0.5,0.5])
 plot(xvec, g1,'color','r','linewidth',lw+1)
 plot(xvec, g2,'color','k','linewidth',lw+1)
 hold off
-xlim([0,80])
-ylim([0,0.055])
+xlim([0,45])
+%ylim([0,0.055])
 % write legend
-text(0.3,0.9,'non-match','color','red','units','normalized','Fontsize',fs,'FontName','Arial')
-text(0.4,0.8,'match','color','k','units','normalized','Fontsize',fs,'FontName','Arial')
+text(0.5,0.9,'non-match','color','red','units','normalized','Fontsize',fs,'FontName','Arial')
+text(0.5,0.8,'match','color','k','units','normalized','Fontsize',fs,'FontName','Arial')
 xlabel('Spike count','Fontsize',fs,'FontName','Arial')
 ylabel('Density','units','normalized','Position',[-0.15,0.5,0],'Fontsize',fs,'FontName','Arial')
 
-set(gca,'XTick',[0,50])
-set(gca,'XTickLabel',[0, 50],'Fontsize',fs,'FontName','Arial')
+set(gca,'XTick',[0,20,40])
+set(gca,'XTickLabel',[0,20,40],'Fontsize',fs,'FontName','Arial')
 set(gca,'YTick',0.05)
 set(gca,'YTickLabel',0.05,'Fontsize',fs,'FontName','Arial')
 set(gca,'LineWidth',lwa,'TickLength',[0.025 0.025]);
@@ -157,7 +156,7 @@ plot(r2,r1,'k','linewidth',lw+1)
 plot(mean(r1_perm,1),mean(r2_perm,1),'--b','linewidth',lw)
 
 % write AUC in two lines
-text(0.07,0.85,'AUROC','units','normalized','Fontsize',fs,'FontName','Arial')
+text(0.08,0.85,'AUROC','units','normalized','Fontsize',fs,'FontName','Arial')
 text(0.07,0.72,[' = ' sprintf('%0.2f',auc)],'units','normalized','Fontsize',fs,'FontName','Arial')
 text(0.55,0.3,'\langle AUROC \rangle_{p}','units','normalized','Fontsize',fs,'FontName','Arial','color','b')
 text(0.55,0.17,['  = ' sprintf('%0.2f',mean(a_perm))],'units','normalized','Fontsize',fs,'FontName','Arial','color','b')
@@ -165,8 +164,8 @@ text(0.55,0.17,['  = ' sprintf('%0.2f',mean(a_perm))],'units','normalized','Font
 set(gca,'LineWidth',lwa,'TickLength',[0.025 0.025]);
 box off
 axis([0,1,0,1])
-xlabel('cdf match','Fontsize',fs,'FontName','Arial')
-ylabel('cdf non-match','Fontsize',fs,'FontName','Arial')
+xlabel('Cdf match','Fontsize',fs,'FontName','Arial')
+ylabel('Cdf non-match','Fontsize',fs,'FontName','Arial')
 set(gca,'XTick',0:0.5:1)
 set(gca,'XTickLabel',0:0.5:1,'Fontsize',fs,'FontName','Arial')
 set(gca,'YTick',[0.5,1])
@@ -180,6 +179,6 @@ set(H, 'Units','centimeters', 'Position', pos_vec)
 set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) 
 
 if savefig==1
-    saveas(H,[savefile,figname],'pdf');
+    print(H,[savefile,figname],'-dtiff','-r300');
 end
 

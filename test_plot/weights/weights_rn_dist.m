@@ -7,16 +7,15 @@ close all
 clc
 
 period=2;
-savefig=1;
+savefig=0;
 
 namea={'V1','V4'};
 namep={'target','test'};
 namew={'','_first_half','_second_half'};
 
-pos_vec=[0,0,12,10];
+pos_vec=[0,0,11.4,8.5];
 figname=['wrn_',namep{period}];
-savefile='/home/veronika/Dropbox/struct_pop/figure/weights/';
-
+savefile='/home/veronika/Dropbox/struct_pop/figure/final/';
 
 lw=1.2;
 ms=5;
@@ -25,7 +24,7 @@ lwa=1;
 
 %%
 
-addpath('/home/veronika/synced/struct_result/weights/weights_regular/')
+addpath('/home/veronika/synced/struct_result/weights/weights_rn/')
 
 wind=cell(2,3);
 for ba=1:2
@@ -81,6 +80,105 @@ for ba=1:2
 end
 display(pval_dist,'p-value one tailed t-test')
 
+%%
+%% plot
+%{
+alpha=0.05;
+blue=[0,0.48,0.74];
+col={'k',blue};
+
+maxw=max(max(cellfun(@max,wind)));
+
+textw={'entire window','first half','second half'};
+textrn={'regular','removed corr.'};
+
+ticks=-0.5:0.5:0.5;
+yt=0.02:0.02:0.06;
+dx=0.002;
+delta=0.2;
+
+H=figure('name',figname,'visible','on');
+for ba=1:2
+    
+    for i=1:3
+        
+        x=wind{ba,i};
+        y=wind_rn{ba,i};
+        z=x-y;
+        
+        [f,xvec]=ksdensity(z);
+        fnorm=f./sum(f);
+        
+        
+        
+        subplot(2,3,i+(ba-1)*3)
+        hold on
+        plot(xvec,fnorm,'color',col{1},'Linewidth',lw)
+        hold off
+        
+        %{
+        [ymax,idxy]= max(fnorm);
+        xm=xvec(idxy);
+        ym=max(twonorm)+(0.1*max(twonorm));
+        
+        line([xm-delta,xm+delta],[ym, ym],'color','k')
+        line([xm-delta,xm-delta],[ym-dx,ym],'color','k')
+        line([xm+delta,xm+delta],[ym-dx,ym],'color','k')
+      
+        if pval_dist(ba,i)<alpha
+            th=text(xm-delta/2,ym+1.5*dx,'*','color','k','fontsize',fs+3);
+        else
+            th=text(xm-delta,ym+1.5*dx,'n.s.','color','k','fontsize',fs);
+        end
+        %}
+        
+        
+        if i==3
+            text(1.01,0.5,namea{ba},'units','normalized', 'FontName','Arial','fontsize',fs)
+        end
+        %set(gca,'XTick',ticks)
+        if ba==1
+            set(gca,'XTickLabel',[])
+        else
+        %    set(gca,'XTickLabel',ticks, 'FontName','Arial','fontsize',fs)
+        end
+        set(gca,'YTick',yt)
+        if i==1
+            set(gca,'YTickLabel',yt, 'FontName','Arial','fontsize',fs)
+        else
+            set(gca,'YTickLabel',[])
+        end
+        if ba==1
+            title(textw{i}, 'FontName','Arial','fontsize',fs, 'Fontweight','normal')
+        end
+        %
+        xlim([-1.2, 1.2])
+        ylim([0,0.06])
+        grid on
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+    end
+    
+end
+
+axes
+
+h1 = xlabel ('Weight','units','normalized','Position',[0.5,-0.07],'FontName','Arial','fontsize',fs);
+h2 = ylabel ('Probability density','units','normalized','Position',[-0.1,0.5,0],'FontName','Arial','fontsize',fs);
+
+set(gca,'Visible','off')
+
+set(h1,'visible','on')
+set(h2,'visible','on')
+
+set(H, 'Units','centimeters', 'Position', pos_vec) 
+set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) 
+
+if savefig==1
+    saveas(H,[savefile,figname],'pdf');
+end
+%}
 %% plot
 
 alpha=0.05;
@@ -118,6 +216,7 @@ for ba=1:2
         plot(xvec,gnorm,'color',col{2},'Linewidth',lw)
         hold off
         
+        %{
         [ymax,idxy]= max(fnorm);
         xm=xvec(idxy);
         ym=max(twonorm)+(0.1*max(twonorm));
@@ -125,8 +224,6 @@ for ba=1:2
         line([xm-delta,xm+delta],[ym, ym],'color','k')
         line([xm-delta,xm-delta],[ym-dx,ym],'color','k')
         line([xm+delta,xm+delta],[ym-dx,ym],'color','k')
-        
-        
         
         if pval_dist(ba,i)<alpha
             th=text(xm-delta/2,ym+1.5*dx,'*','color','k','fontsize',fs+3);
@@ -183,6 +280,6 @@ set(H, 'Units','centimeters', 'Position', pos_vec)
 set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) 
 
 if savefig==1
-    saveas(H,[savefile,figname],'pdf');
+    print(H,[savefile,figname],'-dtiff','-r300');
 end
 

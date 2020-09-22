@@ -2,8 +2,8 @@ clear all
 close all
 clc
 
-savefig=1;
-period=3;
+savefig=0;
+period=2;
 window=1;
 
 namea={'V1','V4'};
@@ -11,15 +11,15 @@ namep={'target','test','delay'};
 namew={'','first_half_','second_half_'};
 
 figname=['rsc_sign_',namep{period},namew{window}(1:end-1)];
-savefile='/home/veronika/Dropbox/struct_pop/figure/sign/corr/';
+savefile='/home/veronika/Dropbox/struct_pop/figure/final/';
 
 green=[0.2,0.7,0];
 gray=[0.2,0.2,0.2];
 col={green,gray};
 
-pos_vec=[0 0 10 9];
+pos_vec=[0 0 8.5 8];
 
-fs=10;
+fs=10.5;
 ms=5;
 lw=1.2;
 lwa=1;
@@ -49,13 +49,13 @@ meancorr=cellfun(@mean, variable);
 
 %% plot
 
-titles={'eCDF','Average peak'};
+titles={'eCDF','Average'};
 
-yt=0:0.2:0.6;
+yt=0:0.5:1;
 yt2=0:0.1:0.3;
 
 ylimit=[-0.15,0.75];
-ylimit2=[0,0.43];
+ylimit2=[0,0.38];
 dx=abs(ylimit(2)-ylimit(1))/18;
 
 idxplt=[1,3];
@@ -76,6 +76,9 @@ for ba=1:2
     grid on
     xlim(ylimit)
     set(gca,'XTick',yt)
+    set(gca,'YTick',yt)
+    set(gca,'YTickLabel',yt,'FontName','Arial','fontsize',fs)
+    
     if ba==1
         title(titles{1}, 'FontName','Arial','Fontsize',fs,'Fontweight','normal')
         set(gca,'XTickLabel',[])
@@ -87,12 +90,11 @@ for ba=1:2
         xlabel('Noise correlation', 'FontName','Arial','Fontsize',fs)
     end
     if sum([ba==1,period==2,window==1])==3
-        text(0.07,0.75,'within','units','normalized','FontName','Arial','fontsize',fs,'color',col{2})
-        text(0.07,0.88,'across','units','normalized','FontName','Arial','fontsize',fs,'color',col{1})
+        text(0.6,0.55,'within','units','normalized','FontName','Arial','fontsize',fs,'color',col{1})
+        text(0.6,0.4,'across','units','normalized','FontName','Arial','fontsize',fs,'color',col{2})
     end
     
-    %%
-    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     subplot(2,2,idxplt(ba)+1)
     
     b=bar(meancorr(ba,:));
@@ -136,7 +138,7 @@ set(H, 'Units','centimeters', 'Position', pos_vec)
 set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) % for saving in the right size
 
 if savefig==1
-    saveas(H,[savefile,figname],'pdf');
+    print(H,[savefile,figname],'-dtiff','-r300');
 end
 
 %%

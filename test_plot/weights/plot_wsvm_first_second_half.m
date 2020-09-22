@@ -5,16 +5,16 @@ clear all
 close all
 clc
 
-period=1;
+period=2;
 savefig=1;
 
 namea={'V1','V4'};
 namep={'target','test'};
 namew={'first_half','second_half'};
 
-pos_vec=[0,0,12,10];
+pos_vec=[0,0,11.4,9.5];
 figname=['weights_window_',namep{period}];
-savefile='/home/veronika/Dropbox/struct_pop/figure/weights/';
+savefile='/home/veronika/Dropbox/struct_pop/figure/final/';
 
 
 lw=1.2;
@@ -200,6 +200,6 @@ set(H, 'Units','centimeters', 'Position', pos_vec)
 set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) 
 
 if savefig==1
-    saveas(H,[savefile,figname],'pdf');
+    print(H,[savefile,figname],'-dtiff','-r300');
 end
 

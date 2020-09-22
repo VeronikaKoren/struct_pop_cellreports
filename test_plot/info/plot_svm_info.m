@@ -6,11 +6,11 @@ clear all
 close all
 clc
 
-savefig=0;
+savefig=1;
 period=2;
 
 figname='svm_info';
-savefile='/home/veronika/Dropbox/struct_pop/figure/info/';
+savefile='/home/veronika/Dropbox/struct_pop/figure/final/';
 
 namet={'informative','not informative'};
 namea={'V1','V4'};
@@ -20,7 +20,7 @@ namep={'target','test'};
 addpath('/home/veronika/synced/struct_result/classification/svm_info/')
 addpath('/home/veronika/synced/struct_result/classification/svm_regular/')
 
-pos_vec=[0,0,12,9]; 
+pos_vec=[0,0,11.4,8.5]; 
 
 lw=1.0; % linewidth
 ms=6; % markersize
@@ -54,11 +54,15 @@ for ba=1:2
     
     loadname=['svm_regular_',namea{ba},namep{period},'.mat'];
     load(loadname);
-    acc_regular(ba)=nanmean(bac_all)
+    acc_regular(ba)=nanmean(bac_all);
     
     accp{ba}=bac_allp;
     
 end
+
+addpath '/home/veronika/synced/struct_result/classification/svm_regular/'
+loadname3='svm_session_order_test';
+load(loadname3);
 
 display(pval_diff,'p-value permutation test info is better than not info')
 
@@ -97,15 +101,13 @@ for ba=1:2
     x=acci{ba}; % info
     y=accn{ba}; % not info
     
-    [~,idx]=sort(x);
-    order=flip(idx);
-    x=x(order);
-    y=y(order);
+    
+    order=sess_order{ba};
     
     subplot(2,3,pltidx{ba})
     hold on
-    plot(1:length(x),x,'+','color',col{1},'markersize',ms,'Linewidth',lw+1);
-    plot(1:length(x),y,'x','color',col{2},'markersize',ms,'Linewidth',lw+1);
+    plot(1:length(x),x(order),'+','color',col{1},'markersize',ms,'Linewidth',lw+1);
+    plot(1:length(x),y(order),'x','color',col{2},'markersize',ms,'Linewidth',lw+1);
     
     plot(0:length(x)+1,ones(length(x)+2,1).*0.5,'--','color',[0.5,0.5,0.5,0.5],'linewidth',lw)
     hold off
@@ -191,7 +193,7 @@ for ba=1:2
 end
 
 axes
-h1 = xlabel ('Session index (sorted w.r.t. info)','Position',[0.3,-0.07],'FontName','Arial','fontsize',fs);
+h1 = xlabel ('Session index (sorted w.r.t. regular)','Position',[0.3,-0.07],'FontName','Arial','fontsize',fs);
 h2 = ylabel ('Balanced accuracy','units','normalized','Position',[-0.1,0.5,0],'FontName','Arial','fontsize',fs);
 set(gca,'Visible','off')
 set(h2,'visible','on')
@@ -201,7 +203,7 @@ set(H, 'Units','centimeters', 'Position', pos_vec)
 set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) 
 
 if savefig==1
-    saveas(H,[savefile,figname],'pdf');
+    print(H,[savefile,figname],'-dtiff','-r300');
 end
 
 %%
@@ -218,5 +220,5 @@ for ba=1:2
     
 end
 display(pval_regi,'p-value permutation test that regular model is better than info');
-hyp=pval_regi<(0.05/numel(pval_regi))
+hyp=pval_regi<(0.05/numel(pval_regi));
 

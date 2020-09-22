@@ -12,13 +12,15 @@ savefig=1;
 period=2;
 alpha=0.05;                                                                     
 
+%%
+
 namea={'V1','V4'};
 namep={'target','test'};
 
-figname='homogeneous';
-savefile='/home/veronika/Dropbox/struct_pop/figure/classification/';
+figname='fig2a';
+savefile='/home/veronika/Dropbox/struct_pop/figure/final/';
 
-pos_vec=[0,0,12,9];                                                            % figure size in cm [x_start, y_start, width, height]
+pos_vec=[0,0,11.4,8.5];                                                            % figure size in cm [x_start, y_start, width, height]
 
 lw=1.0;                                                                         % linewidth
 ms=6;                                                                           % markersize
@@ -63,6 +65,9 @@ for ba=1:2
     
 end
 
+loadname3='svm_session_order_test';
+load(loadname3);
+
 %% difference w.r.t.the regular model
 
 d_sess=cellfun(@(x,y) x-y, acc2,acc,'UniformOutput', false);                                                       % compute the difference bac_permuted - bac_regular 
@@ -101,14 +106,14 @@ H=figure('name',figname,'visible','on');
 for ba=1:2
     
     y2=d_sess{ba};
-    [~,order]=sort(y2);
-    y2=y2(order);
-    y0=d_perm{ba};
+
+    order=sess_order{ba};
+    y0=d_perm{ba}(order,:);
     
     subplot(2,3, pltidx{ba})
     hold on
     bs=boxplot(y0','colors',[0.5,0.5,0.5]);
-    plot(y2,'+','color',col{1},'markersize',ms,'Linewidth',lw+0.5);
+    plot(y2(order),'+','color',col{1},'markersize',ms,'Linewidth',lw+0.5);
     plot(0:length(y2)+1,zeros(length(y2)+2,1),'--','color',[0.2,0.2,0.2,0.7],'linewidth',lw)
     hold off
     
@@ -171,7 +176,7 @@ for ba=1:2
 end
 
 axes
-h1 = xlabel ('Session index (sorted)','Position',[0.3,-0.07],'FontName','Arial','fontsize',fs);
+h1 = xlabel ('Session index (sorted w.r.t. regular)','Position',[0.3,-0.07],'FontName','Arial','fontsize',fs);
 h2 = ylabel ('Difference in accuracy w.r.t. regular (percent)','units','normalized','Position',[-0.1,0.5,0],'FontName','Arial','fontsize',fs);
 set(gca,'Visible','off')
 set(h2,'visible','on')
@@ -181,7 +186,7 @@ set(H, 'Units','centimeters', 'Position', pos_vec)
 set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) 
 
 if savefig==1
-    saveas(H,[savefile,figname],'pdf');
+    print(H,[savefile,figname],'-dtiff','-r300');
 end
 
 

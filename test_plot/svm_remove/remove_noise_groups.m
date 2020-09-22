@@ -9,7 +9,7 @@ clear all
 close all
 clc
 
-savefig=0;
+savefig=1;
 window=1;         
 
 %%
@@ -22,9 +22,9 @@ namew={'','_first_half','_second_half'};
 namer={'regular','window','window'};
 
 figname=['remove_noise_groups',namew{window}];
-savefile='/home/veronika/Dropbox/struct_pop/figure/classification/remove_noise/';
+savefile='/home/veronika/Dropbox/struct_pop/figure/final/';
 
-pos_vec=[0,0,12,9];                                                            % figure size in cm [x_start, y_start, width, height]
+pos_vec=[0,0,11.4,8.5];                                                            % figure size in cm [x_start, y_start, width, height]
 
 lw=1.0;                                                                         % linewidth
 ms=6;                                                                           % markersize
@@ -78,6 +78,11 @@ for ba=1:2
     
 end
 
+addpath '/home/veronika/synced/struct_result/classification/svm_regular/'
+loadname3='svm_session_order_test';
+load(loadname3);
+
+
 %% get difference w.r.t the regular model
 
 d_sess=cellfun(@(x,y) x-y, acc3,acc,'UniformOutput', false);                                                       % compute the difference bac_permuted - bac_regular 
@@ -117,15 +122,13 @@ H=figure('name',figname,'visible','on');
 for ba=1:2
     
     y=d_sess{ba};
-    [~,order]=sort(y);
-    new_order=flip(order);                                                      % from big to small
-    y=y(new_order);
-    y0=d_perm{ba}(new_order,:);
+    order=sess_order{ba}  ;                                                % from big to small
+    y0=d_perm{ba}(order,:);
     
     subplot(2,3, pltidx{ba})
     hold on
     bs=boxplot(y0','colors',[0.5,0.5,0.5]);
-    plot(y,'+','color',col{1},'markersize',ms,'Linewidth',lw+0.5);
+    plot(y(order),'x','color',col{1},'markersize',ms,'Linewidth',lw+0.5);
     plot(0:length(y)+1,zeros(length(y)+2,1),'--','color',[0.2,0.2,0.2,0.7],'linewidth',lw)
     hold off
     
@@ -137,8 +140,8 @@ for ba=1:2
     box off
     
     if and(ba==1,window==1)==1
-        text(0.1,0.92,'removed noise corr. across pools','units','normalized','color',col{1},'fontsize',fs,'FontName','Arial')
-        text(0.1,0.8,'permuted label','units','normalized','color',[0.5,0.5,0.5,0.5],'fontsize',fs,'FontName','Arial')
+        text(0.05,0.92,'removed noise corr. across pools','units','normalized','color',col{1},'fontsize',fs,'FontName','Arial')
+        text(0.05,0.8,'permuted label','units','normalized','color',[0.5,0.5,0.5,0.5],'fontsize',fs,'FontName','Arial')
     end
     
     set(gca,'XTick',xt(ba,:))
@@ -162,8 +165,8 @@ for ba=1:2
     subplot(2,3,pltidx(ba))
     hold on
     bs=boxplot(x0','colors',[0.5,0.5,0.5]);
-    plot(1,x(1),'+','color',col{1},'markersize',ms,'Linewidth',lw+1);
     set(bs,{'linew'},{1})
+    plot(1,x(1),'+','color',col{1},'markersize',ms,'Linewidth',lw+1);
     plot(0:4,zeros(5,1),'--','color',[0.5,0.5,0.5,0.5],'linewidth',lw)
     grid on
     
@@ -186,7 +189,7 @@ for ba=1:2
 end
 
 axes
-h1 = xlabel ('Session index (sorted)','Position',[0.3,-0.07],'FontName','Arial','fontsize',fs);
+h1 = xlabel ('Session index (sorted w.r.t. regular)','Position',[0.3,-0.07],'FontName','Arial','fontsize',fs);
 h2 = ylabel ('Difference in accuracy w.r.t. regular (percent)','units','normalized','Position',[-0.1,0.5,0],'FontName','Arial','fontsize',fs);
 set(gca,'Visible','off')
 set(h2,'visible','on')
@@ -196,6 +199,6 @@ set(H, 'Units','centimeters', 'Position', pos_vec)
 set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) 
 
 if savefig==1
-    saveas(H,[savefile,figname],'pdf');
+    print(H,[savefile,figname],'-dtiff','-r300');
 end
 

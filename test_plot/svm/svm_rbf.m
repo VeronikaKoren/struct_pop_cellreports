@@ -7,7 +7,7 @@ close all
 clc
 
 savefig=1;
-period=1;
+period=2;
 
 namep={'target','test'};
 namea={'V1','V4'};
@@ -42,10 +42,15 @@ for ba=1:2
     accp{ba}= bac_allp;
  
 end
+
+addpath '/home/veronika/synced/struct_result/classification/svm_regular/'
+loadname2='svm_session_order_test';
+load(loadname2);
+
 %%
 sm=cellfun(@(x) nanmean(x),acc);                % average across sessions
 smp=cellfun(@(x) squeeze(nanmean(x)),accp,'UniformOutput',false);
-display(sm)
+display(sm,'mean across sessions')
 
 %% test with permutation test
 
@@ -72,16 +77,14 @@ for ba=1:2
     
     y=squeeze(acc{ba});         % regular
     
-    [~,order]=sort(y);          % sort test results
-    order=flip(order);
-    y=y(order);
+    order=sess_order{ba};
     y0=accp{ba}(order,:);
     
     subplot(2,3,pltidx{ba})
     hold on
-    plot(1:length(y),y,'x','color',col{1},'markersize',ms,'Linewidth',lw+1);
     bs=boxplot(y0','colors',[0.5,0.5,0.5]);
     plot(0:length(x)+1,ones(length(x)+2,1).*0.5,'--','color',[0.5,0.5,0.5,0.5],'linewidth',lw)
+    plot(1:length(y),y(order),'x','color',col{1},'markersize',ms,'Linewidth',lw+1);
     hold off
     
     axis([0,length(y)+1,0.4,0.8])
@@ -98,8 +101,8 @@ for ba=1:2
     set(gca,'YTickLabel',yt,'fontsize',fs,'FontName','Arial')
     
     if ba==1
-        text(0.6,0.82,'regular','units','normalized','color',col{1},'fontsize',fs,'FontName','Arial')
-        text(0.6,0.69,'permuted','units','normalized','color',[0.5,0.5,0.5,0.5],'fontsize',fs,'FontName','Arial')
+        text(0.3,0.82,'regular with RBF kernel','units','normalized','color',col{1},'fontsize',fs,'FontName','Arial')
+        text(0.3,0.69,'permuted','units','normalized','color',[0.5,0.5,0.5,0.5],'fontsize',fs,'FontName','Arial')
     end
     
     set(gca,'LineWidth',1.0,'TickLength',[0.025 0.025]);
@@ -151,7 +154,7 @@ end
 
 axes
 
-h1 = xlabel ('Session index (sorted)','Position',[0.3,-0.07],'FontName','Arial','fontsize',fs);
+h1 = xlabel ('Session index (sorted w.r.t. regular','Position',[0.3,-0.07],'FontName','Arial','fontsize',fs);
 h2 = ylabel ('Balanced accuracy','units','normalized','Position',[-0.1,0.5,0],'FontName','Arial','fontsize',fs);
 set(gca,'Visible','off')
 set(h2,'visible','on')

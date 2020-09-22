@@ -6,7 +6,7 @@
 format long
 
 clear all
-%close all
+close all
 clc
 
 savefig=0;
@@ -14,14 +14,16 @@ period=2;
 
 alpha=0.05;                                                                     
 
+%%
+
 namea={'V1','V4'};
 namep={'target','test'};
 namew={'_first_half','_second_half'};
 
 figname='homogeneous_groups_windows';
-savefile='/home/veronika/Dropbox/struct_pop/figure/classification/';
+savefile='/home/veronika/Dropbox/struct_pop/figure/final/';
 
-pos_vec=[0,0,12,9];                                                            % figure size in cm [x_start, y_start, width, height]
+pos_vec=[0,0,11.4,8.5];                                                            % figure size in cm [x_start, y_start, width, height]
 
 lw=1.0;                                                                         % linewidth
 ms=6;                                                                           % markersize
@@ -77,6 +79,10 @@ for ba=1:2
     
 end
 
+addpath '/home/veronika/synced/struct_result/classification/svm_regular/'
+loadname3='svm_session_order_test';
+load(loadname3);
+
 %% average across sessions
                                                 
 ma=cellfun(@mean, acc2);                                                                                         %  average across sessions
@@ -114,8 +120,8 @@ for ba=1:2
     
     y1=acc2{ba,1};
     y2=acc2{ba,2};
-    [~,idx]=sort(y2);
-    order=flip(idx);
+    
+    order=sess_order{ba};
     
     subplot(2,3, pltidx{ba})
     hold on
@@ -182,7 +188,7 @@ for ba=1:2
 end
 
 axes
-h1 = xlabel ('Session index (sorted w.r.t. second half)','Position',[0.3,-0.07],'FontName','Arial','fontsize',fs);
+h1 = xlabel ('Session index (sorted w.r.t. regular)','Position',[0.3,-0.07],'FontName','Arial','fontsize',fs);
 h2 = ylabel ('Balanced accuracy','units','normalized','Position',[-0.1,0.5,0],'FontName','Arial','fontsize',fs);
 set(gca,'Visible','off')
 set(h2,'visible','on')
@@ -192,7 +198,7 @@ set(H, 'Units','centimeters', 'Position', pos_vec)
 set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) 
 
 if savefig==1
-    saveas(H,[savefile,figname],'pdf');
+    print(H,[savefile,figname],'-dtiff','-r300');
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

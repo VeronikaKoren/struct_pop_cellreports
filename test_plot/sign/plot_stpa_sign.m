@@ -4,14 +4,13 @@ clear all
 close all
 clc
 
-savefig=0;
+savefig=1;
 period=2;
-window=3;
+window=1;
 
 namea={'V1','V4'};
 namep={'target','test'};
 namew={'','first_half_','second_half_'};
-
 
 if window==1
     figname=['stpa_sign_',namep{period},namew{window}];
@@ -19,13 +18,13 @@ else
     figname=['stpa_sign_',namep{period},'_',namew{window}(1:end-1)];
 end
 
-savefile='/home/veronika/Dropbox/struct_pop/figure/sign/';
+savefile='/home/veronika/Dropbox/struct_pop/figure/final/';
 
 green=[0.2,0.7,0];
 gray=[0.2,0.2,0.2];
 col={green,gray};
 
-pos_vec=[0 0 14 9];
+pos_vec=[0 0 11.4 8];
 
 fs=10;
 ms=5;
@@ -67,7 +66,7 @@ ylimit=[-0.02,0.2];
 dx=abs(ylimit(2)-ylimit(1))/18;
 
 idxplt=[1,4];
-H=figure('name',figname,'visible','off');
+H=figure('name',figname,'visible','on');
 
 for ba=1:2
     
@@ -176,7 +175,7 @@ set(H, 'Units','centimeters', 'Position', pos_vec)
 set(H,'PaperPositionMode','Auto','PaperUnits', 'centimeters','PaperSize',[pos_vec(3), pos_vec(4)]) % for saving in the right size
 
 if savefig==1
-    saveas(H,[savefile,figname],'pdf');
+    print(H,[savefile,figname],'-dtiff','-r300');
 end
 
 %%
